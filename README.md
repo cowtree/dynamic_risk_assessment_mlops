@@ -11,6 +11,6 @@ ML automation in production
 - Reporting api output
 
 ## Nice to haves
-[] Full PDF report of the re-training process
-[] Updates: Records keeping of ingested data and model performance tracking (e.g., with SQL database)
-[] Updates: Store model training latencies to keep track over time
+[ ] Full PDF report of the re-training process
+[ ] Updates: Records keeping of ingested data and model performance tracking (e.g., with SQL database)
+[ ] Updates: Store model training latencies to keep track over time
