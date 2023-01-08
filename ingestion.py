@@ -10,7 +10,7 @@ with open('config.json', 'r') as f:
 
 input_folder_path = config['input_folder_path']
 output_folder_path = config['output_folder_path']
-concat_file = config['concat_file']
+concat_file = config['concatfile']
 
 if not os.path.exists(output_folder_path):
     os.makedirs(output_folder_path)

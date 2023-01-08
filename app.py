@@ -25,7 +25,7 @@ model_name = os.path.join(config['model_name'])
 prediction_model = None
 
 
-@app.startup()
+@app.before_first_request
 def load_model():
     """Load the model at the start of the app.
     """
@@ -37,6 +37,7 @@ def load_model():
 def prediction(testdata_path: str = test_data_path):
     """Compute predictions for the dataset.
     """
+    print(type(prediction_model))
     preds = model_predictions(prediction_model, testdata_path)
     return jsonify({'predictions': preds, 'status_code': 200})
 # Scoring Endpoint
@@ -64,7 +65,8 @@ def summarystats():
                 column in the dataset nd status code.
     """
     summary_stats = dataframe_summary(dataset_csv_path)
-    return jsonify({'summary_stats': summary_stats, 'status_code': 200})
+    return jsonify({'summary_stats': summary_stats, 
+                    'status_code': 200})
 
 # Diagnostics Endpoint
 

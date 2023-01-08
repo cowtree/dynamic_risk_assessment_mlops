@@ -12,7 +12,7 @@ with open('config.json', 'r') as f:
 dataset_csv_path = os.path.join(config['output_folder_path'])
 model_folder_path = os.path.join(config['output_model_path'])
 model_name = os.path.join(config['model_name'])
-concat_file = os.path.join(config['concat_file'])
+concat_file = os.path.join(config['concatfile'])
 
 if not os.path.exists(model_folder_path):
     os.makedirs(model_folder_path)

@@ -1,7 +1,7 @@
 
-
 import json
 import os
+import sys
 import logging
 import subprocess
 import numpy as np
@@ -13,9 +13,15 @@ import diagnostics
 import reporting
 
 # logging
-logging.basicConfig(filename='fullprocess.log', \
-                level=logging.DEBUG, \
-                format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    datefmt='%H:%M:%S',
+    filename='fullprocess.log',
+    force=True
+)
+logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
 
 # first, read ingestedfiles.txt
 with open('config.json', 'r') as f:
@@ -28,7 +34,7 @@ ingestedfiles = os.path.join(config['ingested_file'])
 latestscore = os.path.join(config['latestscore_file'])
 model_name = os.path.join(config['model_name'])
 
-with open(os.path.join(dataset_csv_path,ingestedfiles)) as f:
+with open(os.path.join(dataset_csv_path, ingestedfiles)) as f:
     ingestedfiles = json.load(f)
 
 
@@ -54,7 +60,7 @@ def run_full_process():
     source_data_list = [x for x in source_data_list if x.endswith('.csv')]
 
     if source_data_list == []:
-        print('There is no new data. Ending the process here.')
+        logging.info('There is no new data. Ending the process here.')
         exit()
     elif len(source_data_list) > 1:
         # compare source data with ingestedfiles
@@ -80,26 +86,36 @@ def run_full_process():
             logging.info('Model drift is observed. Proceeding the process.')
 
             if recent_f1 > np.min(previous_f1):
-                logging.info('New model performs better than previous model.')
+                logging.info('Newly trained model performs better than previous model.')
                 logging.info('Re-deploying model to production...')
                 deployment.store_model_into_pickle(model_name)
 
-            # Generate diagnostics
-            logging.info('Generating diagnostics...')
-            diagnostics.dataframe_summary()
-            diagnostics.execution_time()
-            diagnostics.check_missing_values()
-            diagnostics.outdated_packages_list()
+                # Generate diagnostics
+                logging.info('Generating diagnostics...')
+                diagnostics.dataframe_summary()
+                diagnostics.execution_time()
+                diagnostics.check_missing_values()
+                diagnostics.outdated_packages_list()
 
-            # Generate reports
-            logging.info('Generating reports...')
-            reporting.score_model()
+                # Generate reports
+                logging.info('Generating reports...')
+                reporting.score_model()
 
-            # run API calls
-            logging.info('Running API calls...')
-            subprocess.call(['python', 'apicalls.py'])
+                # run API calls
+                logging.info('Running API calls...')
+                subprocess.call(['python', 'apicalls.py'])
 
-            logging.info('Process completed. Model re-trained and re-deployed.')
+                logging.info(
+                    'Process completed. Model re-trained and re-deployed to production.')
+
+            else:
+                logging.info('Newly trained model performs worse than previous model.')
+                logging.info('Keeping the previous model in production.')
+
+        else:
+            logging.info(
+                'No model drift is observed. Keeping previous model...Ending process.')
+            exit()
 
     else:
         logging.info('There is no new data. Ending process.')

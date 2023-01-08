@@ -3,8 +3,6 @@ import json
 import shutil
 import logging
 
-
-
 logger = logging.getLogger(__name__)
 formatter = logging.Formatter("%(asctime)s;%(levelname)s;%(message)s",
                               "%Y-%m-%d %H:%M:%S")

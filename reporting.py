@@ -6,9 +6,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sklearn.metrics as metrics
 import seaborn as sns
-from utils import load_ml_model
-
 from diagnostics import model_predictions
+from utils import load_ml_model
 
 with open('config.json','r') as f:
     config = json.load(f)
@@ -16,18 +15,20 @@ with open('config.json','r') as f:
 dataset_csv_path = config['output_folder_path']
 prod_deployment_path = config['prod_deployment_path']
 test_data_path = config['test_data_path']
+test_file = config['test_data_file']
 model_path = config['output_model_path']
+model_name = config['model_name']
 
 def score_model():
     """This function will score the model
     """
 
     # get predictions of deployed model in diagnostics.py running on the test data
-    model = load_ml_model(os.path.join(model_path, model_path))
+    model = load_ml_model(os.path.join(model_path,model_name))
     predicted = model_predictions(model, test_data_path)
 
     # load test data
-    testdata=pd.read_csv(test_data_path + '/testdata.csv')
+    testdata=pd.read_csv(os.path.join(test_data_path,test_file))
     # get actual values
     y_test = testdata['exited'].values.reshape(-1,1)
 
