@@ -1,1 +1,1 @@
-{ "input_folder_path": "sourcedata", "output_folder_path": "ingesteddata", "test_data_path": "testdata", "output_model_path": "models", "prod_deployment_path": "production_deployment"}
+{ "input_folder_path": "sourcedata", "output_folder_path": "ingesteddata", "test_data_path": "testdata", "output_model_path": "models", "prod_deployment_path": "production_deployment", "concatfile": "finaldata.csv", "latestscore_file": "latestscore.txt", "ingested_file": "ingestedfiles.txt", "test_data_file": "testdata.csv", "model_name": "trainedmodel.pkl" }

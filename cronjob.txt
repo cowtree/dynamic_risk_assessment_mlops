@@ -1,1 +1,1 @@
-10 * * * * python fullprocess.py
+*/10 * * * * python fullprocess.py

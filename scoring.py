@@ -2,25 +2,25 @@ import pickle
 import os
 import json
 import pandas as pd
-import matplotlib.pyplot as plt
 import sklearn.metrics as metrics
-
-
-#################Load config.json and get path variables
-with open('config.json','r') as f:
+from utils import load_ml_model
+with open('config.json', 'r') as f:
     config = json.load(f)
 
 dataset_csv_path = os.path.join(config['output_folder_path'])
 test_data_path = os.path.join(config['test_data_path'])
 output_model_path = os.path.join(config['output_model_path'])
+latestscore_file = os.path.join(config['latestscore_file'])
+test_data_file = os.path.join(config['test_data_file'])
+model_name = os.path.join(config['model_name'])
 
 # check if model folder exists
 if not os.path.exists(output_model_path):
     os.makedirs(output_model_path)
 
 
-#################Function for model scoring
-def score_model(model = 'trainedmodel.pkl'):
+def score_model(model: str = model_name,
+                testdatta_name: str = test_data_file) -> float:
     """This function will score the model
 
     Args:
@@ -28,27 +28,23 @@ def score_model(model = 'trainedmodel.pkl'):
 
     Returns:
         float: F1 score
-    """    
+    """
 
-    #this function should take a trained model, load test data, and calculate an F1 score for the model relative to the test data
-    #it should write the result to the latestscore.txt file
+    model = load_ml_model(os.path.join(output_model_path, model))
+    testdata = pd.read_csv(os.path.join(test_data_path, testdatta_name))
 
-    with open(os.path.join(output_model_path,model), 'rb') as file:
-        model = pickle.load(file)
+    testdata = testdata.drop(['corporation'], axis=1)
+    y_train = testdata['exited'].values.reshape(-1, 1)
+    predicted = model.predict(testdata.drop(['exited'], axis=1))
 
-    testdata=pd.read_csv(test_data_path + '/testdata.csv')
+    f1score = metrics.f1_score(predicted, y_train)
 
-    x_train = testdata[['lastmonth_activity','lastyear_activity','number_of_employees']].values.reshape(-1,3)
-    y_train = testdata['exited'].values.reshape(-1,1)
-    predicted = model.predict(x_train)
-    f1score = metrics.f1_score(predicted,y_train)
- 
-    with open(os.path.join(output_model_path,'latestscore.txt'), 'w') as file:
+    # write the f1 score to a file
+    with open(os.path.join(output_model_path, latestscore_file), 'w') as file:
         file.write(str(f1score))
 
     return f1score
 
+
 if __name__ == '__main__':
-    score_model('trainedmodel.pkl')
-
-
+    score_model(model_name)

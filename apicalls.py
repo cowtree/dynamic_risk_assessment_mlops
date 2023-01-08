@@ -8,13 +8,13 @@ URL = "http://192.168.1.61:8000/"
 testdata_path = '/testdata/testdata.csv'
 
 #Call each API endpoint and store the responses
-response1 = requests.post(URL + "prediction" + "?data_path=" + testdata_path)
-response2 = requests.get(URL + "scoring")
-response3 = requests.get(URL + "summarystats")
-response4 = requests.get(URL + "diagnostics")
+prediction = requests.post(URL + "prediction" + "?data_path=" + testdata_path)
+scoring = requests.get(URL + "scoring")
+summary_stats = requests.get(URL + "summarystats")
+diagnostics = requests.get(URL + "diagnostics")
 
 #combine all API responses
-responses = [response1, response2, response3, response4]
+responses = [prediction, scoring, summary_stats, diagnostics]
 
 #write the responses to your workspace
 with open('config.json','r') as f:
