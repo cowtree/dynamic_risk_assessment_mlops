@@ -1,3 +1,6 @@
+import json
+import os
+import utils
 from flask import Flask, jsonify
 from dotenv import load_dotenv
 from scoring import score_model
@@ -6,9 +9,6 @@ from diagnostics import model_predictions, \
     execution_time,  \
     check_missing_values, \
     outdated_packages_list
-import json
-import os
-import utils
 
 load_dotenv()
 
@@ -24,14 +24,12 @@ model_name = os.path.join(config['model_name'])
 
 prediction_model = None
 
-
 @app.before_first_request
 def load_model():
     """Load the model at the start of the app.
     """
     global prediction_model
     prediction_model = utils.load_ml_model(model_name)
-
 
 @app.route("/prediction", methods=['POST', 'OPTIONS'])
 def prediction(testdata_path: str = test_data_path):
@@ -40,8 +38,6 @@ def prediction(testdata_path: str = test_data_path):
     print(type(prediction_model))
     preds = model_predictions(prediction_model, testdata_path)
     return jsonify({'predictions': preds, 'status_code': 200})
-# Scoring Endpoint
-
 
 @app.route("/scoring", methods=['GET', 'OPTIONS'])
 def scoring():
@@ -54,18 +50,15 @@ def scoring():
     # add return value (a single F1 score number)
     return jsonify({'f1score': score, 'status_code': 200})
 
-# Summary Statistics Endpoint
-
-
 @app.route("/summarystats", methods=['GET', 'OPTIONS'])
 def summarystats():
     """Compute summary statistics for the dataset.
     Returns:
-        json: Mean/Median/Standard deviation for each 
+        json: Mean/Median/Standard deviation for each
                 column in the dataset nd status code.
     """
     summary_stats = dataframe_summary(dataset_csv_path)
-    return jsonify({'summary_stats': summary_stats, 
+    return jsonify({'summary_stats': summary_stats,
                     'status_code': 200})
 
 # Diagnostics Endpoint
@@ -86,7 +79,7 @@ def diagnostics():
     return jsonify({'exec_time': exec_time,
                     'missing_vals (in %)': missing_vals,
                     'dependency_check': list_packages,
-                    'status_code': 200})  # add return value for all diagnostics
+                    'status_code': 200})
 
 
 if __name__ == "__main__":

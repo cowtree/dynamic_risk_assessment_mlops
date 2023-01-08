@@ -3,7 +3,6 @@ import os
 import json
 import subprocess
 import pandas as pd
-from utils import load_ml_model
 
 with open('config.json', 'r') as f:
     config = json.load(f)
@@ -13,9 +12,6 @@ test_data_path = config['test_data_path']
 prod_deploy_path = config['prod_deployment_path']
 test_data_file = config['test_data_file']
 concat_file = config['concatfile']
-model_path = config['output_model_path']
-model_name = config['model_name']
-
 
 def model_predictions(model : object = None,
                         data_path: str = test_data_path):
@@ -31,10 +27,12 @@ def model_predictions(model : object = None,
     testdata = pd.read_csv(os.path.join(data_path,test_data_file))
     testdata.drop(['corporation', 'exited'], inplace=True, axis=1)
 
-    predicted = model.predict(testdata)
-
-    return predicted.tolist()
-
+    if model is None:
+        predicted = model.predict(testdata) 
+        return predicted.tolist()
+    else:
+        print('No model found')
+        exit()
 
 def dataframe_summary(data_path: str = dataset_csv_path):
     """This function will calculate summary statistics
@@ -123,7 +121,7 @@ def outdated_packages_list():
 
 
 if __name__ == '__main__':
-    model_predictions(data_path = test_data_path)
+    model_predictions()
     dataframe_summary()
     execution_time()
     check_missing_values()

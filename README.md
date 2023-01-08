@@ -36,7 +36,7 @@ In order to get started, it is recommended to go step by step through the necess
 2. [```training.py```](training.py): Model training and model preparation (into pickle format), here using a Logistic Regression model
 3. [```scoring.py```](scoring.py): Model scoring and model evaluation, here using F1 Score
 4. [```deployment.py```](deployment.py): Model deployment to production
-5. [```diagnostics.py```](diagnostics.py): Model diagnostics (e.g., identification of data drift, missing values, data summary statistics etc.)
+5. [```diagnostics.py```](diagnostics.py): Model diagnostics (e.g., identification of missing values, execution time, data summary statistics, dependencies check)
 6. [```reporting.py```](reporting.py): Model reporting (e.g., model performance, model diagnostics, etc.)
 7. [```app.py```](app.py): Flask app running each functionality above as an API endpoint
 
