@@ -90,6 +90,6 @@ In vim mode, paste in the content of the ```cronjob.txt``` file. Save and exit. 
 
 Cao Tri Do - [@linkedin](https://www.linkedin.com/in/caotrido/) - huycaotrido@gmail.com
 
-Project Link: [https://github.com/github_username/repo_name](https://github.com/github_username/repo_name)
+Project Link: [https://github.com/cowtree/dynamic_risk_assessment_mlops](https://github.com/cowtree/dynamic_risk_assessment_mlops)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
