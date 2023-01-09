@@ -4,14 +4,13 @@ import os
 import sys
 import logging
 import subprocess
-import numpy as np
-import training
 import ingestion
 import scoring
+import training
 import deployment
 import diagnostics
 import reporting
-
+from utils import load_ml_model
 # logging
 
 logging.basicConfig(
@@ -33,6 +32,8 @@ prod_deployment_path = os.path.join(config['prod_deployment_path'])
 ingestedfiles = os.path.join(config['ingested_file'])
 latestscore = os.path.join(config['latestscore_file'])
 model_name = os.path.join(config['model_name'])
+output_folder_path = config['output_folder_path']
+concat_file = config['concatfile']
 
 with open(os.path.join(dataset_csv_path, ingestedfiles)) as f:
     ingestedfiles = json.load(f)
@@ -70,23 +71,34 @@ def run_full_process():
         logging.info('There is new data. Proceeding.')
         logging.info("No. of ingested files: %s", len(ingested_list))
         logging.info("No. of source data files: %s", len(source_data_list))
-        # get new files
+
+        # ingest new files
         check_new_files()
 
-        logging.info("Retraining the model with new data...")
-        training.train_model()
-        recent_f1 = scoring.score_model()
+        logging.info("Score production model with new data...")
+        model = load_ml_model(os.path.join(prod_deployment_path, model_name))
+        new_ingested_datapath = os.path.join(
+            output_folder_path, concat_file)
+        recent_f1 = scoring.score_model(
+            model, new_ingested_datapath)
         logging.info("Score of the new model: %s", recent_f1)
 
-        # read the previous scores from the deployment directory
+        # read the previous score from the deployment directory
         with open(os.path.join(prod_deployment_path, latestscore), 'r') as f:
             previous_f1 = float(f.read())
 
+         # raw comparison test
         if (recent_f1 != previous_f1):
             logging.info('Model drift is observed. Proceeding the process.')
 
-            if recent_f1 > np.min(previous_f1):
-                logging.info('Newly trained model performs better than previous model.')
+            if recent_f1 < previous_f1:
+                logging.info('New model performs better than previous model.')
+
+                # Re-train
+                logging.info('Re-training model...')
+                training.train_model(model, new_ingested_datapath)
+
+                # Re-deploy
                 logging.info('Re-deploying model to production...')
                 deployment.store_model_into_pickle(model_name)
 
@@ -109,7 +121,8 @@ def run_full_process():
                     'Process completed. Model re-trained and re-deployed to production.')
 
             else:
-                logging.info('Newly trained model performs worse than previous model.')
+                logging.info(
+                    'Newly trained model performs worse than previous model.')
                 logging.info('Keeping the previous model in production.')
 
         else:
