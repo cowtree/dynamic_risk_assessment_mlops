@@ -18,8 +18,8 @@ if not os.path.exists(output_model_path):
     os.makedirs(output_model_path)
 
 
-def score_model(model: str = model_name,
-                testdatta_name: str = test_data_file) -> float:
+def score_model(model: object = None,
+                test_data_filepath: str = test_data_file) -> float:
     """This function will score the model
 
     Args:
@@ -29,9 +29,7 @@ def score_model(model: str = model_name,
         float: F1 score
     """
 
-    model = load_ml_model(os.path.join(output_model_path, model))
-    testdata = pd.read_csv(os.path.join(test_data_path, testdatta_name))
-
+    testdata = pd.read_csv(test_data_filepath)
     testdata = testdata.drop(['corporation'], axis=1)
     y_train = testdata['exited'].values.reshape(-1, 1)
     predicted = model.predict(testdata.drop(['exited'], axis=1))
@@ -44,6 +42,6 @@ def score_model(model: str = model_name,
 
     return f1score
 
-
 if __name__ == '__main__':
-    score_model(model_name)
+    score_model(load_ml_model(os.path.join(output_model_path, model_name)),
+                os.path.join(test_data_path, test_data_file))
