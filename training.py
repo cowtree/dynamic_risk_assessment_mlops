@@ -18,7 +18,21 @@ if not os.path.exists(model_folder_path):
     os.makedirs(model_folder_path)
 
 
-def train_model(model_path: str = model_folder_path,
+def init_logit_model() -> object:
+    """This function will initialize the logistic regression model
+
+    Returns:
+        object: Logistic regression model
+    """
+
+    model = LogisticRegression(C=1.0, class_weight=None, dual=False, fit_intercept=True,
+                            intercept_scaling=1, l1_ratio=None, max_iter=100,
+                            multi_class='ovr', n_jobs=None, penalty='l2',
+                            random_state=0, solver='liblinear', tol=0.0001, verbose=0,
+                            warm_start=False)
+    return model
+
+def train_model(model : object = None ,
                 data_path: str = dataset_csv_path):
     """This function will train the model
     """
@@ -34,19 +48,17 @@ def train_model(model_path: str = model_folder_path,
                                               training_data['exited'], test_size=0.2,
                                               random_state=0)
 
-    # use this logistic regression for training
-    logit = LogisticRegression(C=1.0, class_weight=None, dual=False, fit_intercept=True,
-                               intercept_scaling=1, l1_ratio=None, max_iter=100,
-                               multi_class='ovr', n_jobs=None, penalty='l2',
-                               random_state=0, solver='liblinear', tol=0.0001, verbose=0,
-                               warm_start=False)
+    if model is None:
+        # use this logistic regression for training
+        model = init_logit_model()
 
-    # fit the logistic regression to your data
-    model = logit.fit(x_train, y_train)
+         # fit the logistic regression to your data
+        model.fit(x_train, y_train)
+    else:
+        model.fit(x_train, y_train)
 
     # write the trained model to your workspace in a file called
-    pickle.dump(model, open(os.path.join(model_path, model_name), 'wb'))
-
+    pickle.dump(model, open(os.path.join(model_folder_path, model_name), 'wb'))
 
 if __name__ == '__main__':
     train_model()
