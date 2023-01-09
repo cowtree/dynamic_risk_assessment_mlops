@@ -87,13 +87,15 @@ def run_full_process():
         with open(os.path.join(prod_deployment_path, latestscore), 'r') as f:
             previous_f1 = float(f.read())
 
+        logging.info("Score of the previous model: %s", previous_f1)
+
          # raw comparison test
         if (recent_f1 != previous_f1):
-            logging.info('Model drift is observed. Proceeding the process.')
+          
 
             if recent_f1 < previous_f1:
-                logging.info('New model performs better than previous model.')
-
+                logging.info('Model drift is observed. Proceeding the process.')
+ 
                 # Re-train
                 logging.info('Re-training model...')
                 training.train_model(model, new_ingested_datapath)
@@ -102,20 +104,13 @@ def run_full_process():
                 logging.info('Re-deploying model to production...')
                 deployment.store_model_into_pickle(model_name)
 
-                # Generate diagnostics
-                logging.info('Generating diagnostics...')
-                diagnostics.dataframe_summary()
-                diagnostics.execution_time()
-                diagnostics.check_missing_values()
-                diagnostics.outdated_packages_list()
+                # run API calls
+                logging.info('Generating diagnostics and reports through API...')
+                subprocess.call(['python', 'apicalls.py'])
 
                 # Generate reports
                 logging.info('Generating reports...')
                 reporting.score_model()
-
-                # run API calls
-                logging.info('Running API calls...')
-                subprocess.call(['python', 'apicalls.py'])
 
                 logging.info(
                     'Process completed. Model re-trained and re-deployed to production.')

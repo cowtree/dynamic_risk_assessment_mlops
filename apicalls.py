@@ -5,11 +5,11 @@ import os
 #Specify a URL that resolves to your workspace
 URL = "http://192.168.1.61:8000/"
 
-testdata_path = '/testdata/testdata.csv'
+testdata_path = 'testdata/testdata.csv'
 
 #Call each API endpoint and store the responses
 prediction = requests.post(URL + "prediction" + "?data_path=" + testdata_path)
-scoring = requests.get(URL + "scoring")
+scoring = requests.get(URL + "scoring" + "?data_path=" + testdata_path)
 summary_stats = requests.get(URL + "summarystats")
 diagnostics = requests.get(URL + "diagnostics")
 

@@ -1,7 +1,7 @@
 import json
 import os
 import utils
-from flask import Flask, jsonify
+from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 from scoring import score_model
 from diagnostics import model_predictions, \
@@ -32,11 +32,12 @@ def load_model():
     prediction_model = utils.load_ml_model(model_name)
 
 @app.route("/prediction", methods=['POST', 'OPTIONS'])
-def prediction(testdata_path: str = test_data_path):
+def prediction():
     """Compute predictions for the dataset.
     """
-    print(type(prediction_model))
-    preds = model_predictions(prediction_model, testdata_path)
+    test_filepath = request.args.get('data_path')
+    print(test_filepath)
+    preds = model_predictions(prediction_model, test_filepath)
     return jsonify({'predictions': preds, 'status_code': 200})
 
 @app.route("/scoring", methods=['GET', 'OPTIONS'])
@@ -46,7 +47,8 @@ def scoring():
     Returns:
         json: F1 score for the model and status code.
     """
-    score = score_model(model_name)
+    test_filepath = request.args.get('data_path')
+    score = score_model(prediction_model, test_filepath)
     # add return value (a single F1 score number)
     return jsonify({'f1score': score, 'status_code': 200})
 

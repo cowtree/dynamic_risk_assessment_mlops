@@ -27,7 +27,7 @@ def model_predictions(model : object = None,
         list: Predictions
     """
     # read the deployed model and a test dataset, calculate predictions
-    testdata = pd.read_csv(os.path.join(data_path,test_data_file))
+    testdata = pd.read_csv(data_path)
     testdata.drop(['corporation', 'exited'], inplace=True, axis=1)
 
     if model is not None:

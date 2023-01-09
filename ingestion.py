@@ -11,7 +11,7 @@ with open('config.json', 'r') as f:
 input_folder_path = config['input_folder_path']
 output_folder_path = config['output_folder_path']
 concat_file = config['concatfile']
-ingested_file = config['ingestedfile']
+ingested_file = config['ingested_file']
 
 if not os.path.exists(output_folder_path):
     os.makedirs(output_folder_path)
@@ -22,6 +22,7 @@ def save_clean_data(df, filename):
     """
     df.to_csv(os.path.join(output_folder_path, filename), index=False)
 
+
 def merge_multiple_dataframe():
     """This function will merge multiple dataframes into one dataframe
     """
@@ -30,6 +31,7 @@ def merge_multiple_dataframe():
     df_list = pd.concat(map(pd.read_csv, datasets))
     clean_df = df_list.drop_duplicates()
     save_clean_data(clean_df, concat_file)
+
 
 def record_ingestion_datasets():
     """This function will record the ingestion datasets
@@ -62,13 +64,13 @@ def record_ingestion_datasets():
                 allrecords['length_dataset'].append(len(df1.index))
                 allrecords['thetimenow'].append(thetimenow)
 
-    ingested_file = os.path.join(output_folder_path, "ingestedfiles.txt")
     # Serializing json
     json_object = json.dumps(allrecords)
 
     # Writing to sample.json
-    with open(ingested_file, "w") as outfile:
+    with open(os.path.join(output_folder_path, ingested_file), "w") as outfile:
         outfile.write(json_object)
+
 
 if __name__ == '__main__':
     merge_multiple_dataframe()

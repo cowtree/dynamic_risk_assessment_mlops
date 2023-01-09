@@ -25,7 +25,9 @@ def score_model():
 
     # get predictions of deployed model in diagnostics.py running on the test data
     model = load_ml_model(os.path.join(model_path,model_name))
-    predicted = model_predictions(model, test_data_path)
+    print(os.path.join(test_data_path, test_file))
+    predicted = model_predictions(model,
+                    os.path.join(test_data_path, test_file))
 
     # load test data
     testdata=pd.read_csv(os.path.join(test_data_path,test_file))

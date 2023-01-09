@@ -19,7 +19,7 @@ if not os.path.exists(output_model_path):
 
 
 def score_model(model: object = None,
-                test_data_filepath: str = test_data_file) -> float:
+                test_data_filepath: str = None) -> float:
     """This function will score the model
 
     Args:
@@ -28,6 +28,9 @@ def score_model(model: object = None,
     Returns:
         float: F1 score
     """
+
+    if test_data_filepath is None:
+        test_data_filepath = os.path.join(test_data_path, test_data_file)
 
     testdata = pd.read_csv(test_data_filepath)
     testdata = testdata.drop(['corporation'], axis=1)
